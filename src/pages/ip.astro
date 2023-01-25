@@ -1,18 +1,52 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
-const xRealIp = import.meta.env.DEV ? '127.0.0.1' : Astro.request.headers.get('X-Real-Ip') ?? '';
+const xRealIp = Astro.request.headers.get('X-Real-Ip');
 const xForwardedFor = Astro.request.headers.get('X-Forwarded-For') ?? '';
 
 const ipAddr = xRealIp || xForwardedFor.split(',')[0];
+
+let ipData = null;
+let error = null;
+
+try {
+  ipData = await fetch(`http://ip-api.com/json/${ipAddr}`).then((res) => res.json());
+
+  if (ipData.status !== 'success') throw new Error(ipData.message);
+} catch (err) {
+  error = err;
+}
 ---
 
 <Layout title="IP - NerfThis Tools">
   <main>
     <h1>IP Address</h1>
 
-    <ul>
-      <li>{ipAddr}</li>
-    </ul>
+    {
+      ipData && !error ? (
+        <table class="table">
+          <tbody>
+            <tr>
+              <th scope="row">IP</th>
+              <td class="text-end">{ipData.query}</td>
+            </tr>
+            <tr>
+              <th scope="row">City</th>
+              <td class="text-end">{ipData.city}</td>
+            </tr>
+            <tr>
+              <th scope="row">Region</th>
+              <td class="text-end">{ipData.regionName}</td>
+            </tr>
+            <tr>
+              <th scope="row">Country</th>
+              <td class="text-end">{ipData.country}</td>
+            </tr>
+          </tbody>
+        </table>
+      ) : (
+        <p>💩 oops. Catastrophically failed to lookup IP data. The usual team of killer monkeys has been dispatched.</p>
+      )
+    }
   </main>
 </Layout>
