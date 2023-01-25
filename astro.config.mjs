@@ -1,9 +1,10 @@
+import node from '@astrojs/node';
 import { defineConfig } from 'astro/config';
-
-import netlify from '@astrojs/netlify/functions';
 
 // https://astro.build/config
 export default defineConfig({
-  adapter: netlify(),
+  adapter: node({
+    mode: 'standalone',
+  }),
   output: 'server',
 });
