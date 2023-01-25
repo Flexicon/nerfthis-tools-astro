@@ -1,0 +1,32 @@
+---
+interface Props {
+  data: {
+    query: String;
+    city: String;
+    regionName: String;
+    country: String;
+  };
+}
+const { data } = Astro.props;
+---
+
+<table class="table">
+  <tbody>
+    <tr>
+      <th scope="row">IP</th>
+      <td class="text-end">{data.query}</td>
+    </tr>
+    <tr>
+      <th scope="row">City</th>
+      <td class="text-end">{data.city}</td>
+    </tr>
+    <tr>
+      <th scope="row">Region</th>
+      <td class="text-end">{data.regionName}</td>
+    </tr>
+    <tr>
+      <th scope="row">Country</th>
+      <td class="text-end">{data.country}</td>
+    </tr>
+  </tbody>
+</table>

@@ -1,4 +1,5 @@
 ---
+import IpGeolocation from '../components/IpGeolocation.astro';
 import Layout from '../layouts/Layout.astro';
 
 const xRealIp = Astro.request.headers.get('X-Real-Ip');
@@ -19,34 +20,24 @@ try {
 ---
 
 <Layout title="IP - NerfThis Tools">
-  <main>
-    <h1>IP Address</h1>
+  <div class="px-4 py-5 mt-5 text-center">
+    <h1 class="display-5 fw-bold">🏠 IP Address</h1>
+    <div class="col-lg-5 mx-auto">
+      <p class="lead mb-3">Here's your current IP Address and Geolocation data.</p>
+    </div>
+  </div>
 
-    {
-      ipData && !error ? (
-        <table class="table">
-          <tbody>
-            <tr>
-              <th scope="row">IP</th>
-              <td class="text-end">{ipData.query}</td>
-            </tr>
-            <tr>
-              <th scope="row">City</th>
-              <td class="text-end">{ipData.city}</td>
-            </tr>
-            <tr>
-              <th scope="row">Region</th>
-              <td class="text-end">{ipData.regionName}</td>
-            </tr>
-            <tr>
-              <th scope="row">Country</th>
-              <td class="text-end">{ipData.country}</td>
-            </tr>
-          </tbody>
-        </table>
-      ) : (
-        <p>💩 oops. Catastrophically failed to lookup IP data. The usual team of killer monkeys has been dispatched.</p>
-      )
-    }
-  </main>
+  <div class="container">
+    <div class="col-lg-5 mx-auto">
+      {
+        ipData && !error ? (
+          <IpGeolocation data={ipData} />
+        ) : (
+          <p>
+            💩 oops. Catastrophically failed to lookup IP data. The usual team of killer monkeys has been dispatched.
+          </p>
+        )
+      }
+    </div>
+  </div>
 </Layout>
