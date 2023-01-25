@@ -1,0 +1,21 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const xRealIp = Astro.request.headers.get('X-Real-Ip');
+const xForwardedFor = Astro.request.headers.get('X-Forwarded-For');
+const headers = Astro.request.headers;
+---
+
+<Layout title="IP - NerfThis Tools">
+  <main>
+    <h1>IP Address</h1>
+    <p>Todo...</p>
+
+    <ul>
+      <li>X-Real-Ip: {xRealIp}</li>
+      <li>X-Forwarded-For: {xForwardedFor}</li>
+    </ul>
+
+    <pre>{JSON.stringify(headers)}</pre>
+  </main>
+</Layout>
