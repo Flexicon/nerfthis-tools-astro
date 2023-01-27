@@ -1,19 +1,22 @@
 ---
 import IpGeolocation from '../components/IpGeolocation.astro';
 import Layout from '../layouts/Layout.astro';
+import { getFromAPI, getFromCache, saveToCache } from '../server/ip';
 
 const xRealIp = Astro.request.headers.get('X-Real-Ip');
 const xForwardedFor = Astro.request.headers.get('X-Forwarded-For') ?? '';
 
-const ipAddr = xRealIp || xForwardedFor.split(',')[0];
+const ipAddress = xRealIp || xForwardedFor.split(',')[0];
+const cacheKey = `geo-ip.${ipAddress || 'localhost'}`;
 
 let ipData = null;
 let error = null;
 
 try {
-  ipData = await fetch(`http://ip-api.com/json/${ipAddr}`).then((res) => res.json());
+  ipData = (await getFromCache(cacheKey)) || (await getFromAPI(ipAddress));
 
   if (ipData.status !== 'success') throw new Error(ipData.message);
+  if (!ipData.cached) await saveToCache(cacheKey, ipData);
 } catch (err) {
   error = err;
 }

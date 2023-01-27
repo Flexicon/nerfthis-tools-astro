@@ -1,11 +1,8 @@
 ---
+import type { IpResponse } from '../types/ip';
+
 interface Props {
-  data: {
-    query: String;
-    city: String;
-    regionName: String;
-    country: String;
-  };
+  data: IpResponse;
 }
 const { data } = Astro.props;
 ---
