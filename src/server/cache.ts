@@ -4,7 +4,7 @@ import { createClient, SetOptions } from 'redis';
 const DEFAULT_CACHE_EX = 30;
 
 class Cache {
-  private client = createClient({ url: import.meta.env.REDIS_URI });
+  private client = createClient({ url: import.meta.env.REDIS_URI || process.env.REDIS_URI });
   private isConnected = false;
 
   constructor() {
