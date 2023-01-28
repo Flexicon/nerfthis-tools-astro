@@ -1,23 +1,20 @@
 ---
 import IpGeolocation from '../components/IpGeolocation.astro';
 import Layout from '../layouts/Layout.astro';
-import { getFromAPI, getFromCache, saveToCache } from '../server/ip';
+import IpService from '../server/ip';
 
 const xRealIp = Astro.request.headers.get('X-Real-Ip');
 const xForwardedFor = Astro.request.headers.get('X-Forwarded-For') ?? '';
 
 const ipAddress = xRealIp || xForwardedFor.split(',')[0];
-const cacheKey = `geo-ip.${ipAddress || 'localhost'}`;
 
 let ipData = null;
 let error = null;
 
 try {
-  ipData = (await getFromCache(cacheKey)) || (await getFromAPI(ipAddress));
-
-  if (ipData.status !== 'success') throw new Error(ipData.message);
-  if (!ipData.cached) await saveToCache(cacheKey, ipData);
+  ipData = (await IpService.getFromCache(ipAddress)) || (await IpService.getFromAPIAndCache(ipAddress));
 } catch (err) {
+  console.error('Cache lookup failed:', err);
   error = err;
 }
 ---
@@ -36,9 +33,12 @@ try {
         ipData && !error ? (
           <IpGeolocation data={ipData} />
         ) : (
-          <p>
-            💩 oops. Catastrophically failed to lookup IP data. The usual team of killer monkeys has been dispatched.
-          </p>
+          <>
+            <p>
+              💩 oops. Catastrophically failed to lookup IP data. The usual team of killer monkeys has been dispatched.
+            </p>
+            <pre>{error}</pre>
+          </>
         )
       }
     </div>
