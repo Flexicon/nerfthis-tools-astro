@@ -6,6 +6,9 @@ export interface IpResponse {
   city: string;
   country: string;
   countryCode: string;
+  isp: string;
+  org: string;
+  as: string;
   lat: number;
   lon: number;
   regionName: string;
