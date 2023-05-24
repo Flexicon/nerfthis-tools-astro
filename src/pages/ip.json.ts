@@ -7,7 +7,20 @@ export const get: APIRoute = async ({ request }) => {
     const ipAddress = IpService.extractIpFromRequest(request);
     const ipData = (await IpService.getFromCache(ipAddress)) || (await IpService.getFromAPIAndCache(ipAddress));
 
-    return new Response(JSON.stringify(ipData), {
+    const { status, city, country, countryCode, lat, lon, query, regionName } = ipData;
+
+    const responseBody = {
+      status,
+      city,
+      country,
+      countryCode,
+      ip: query,
+      lat,
+      lon,
+      regionName,
+    };
+
+    return new Response(JSON.stringify(responseBody), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
