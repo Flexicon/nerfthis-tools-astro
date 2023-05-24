@@ -3,41 +3,38 @@ import IpGeolocation from '../components/IpGeolocation.astro';
 import Layout from '../layouts/Layout.astro';
 import IpService from '../server/ip';
 
-const xRealIp = Astro.request.headers.get('X-Real-Ip');
-const xForwardedFor = Astro.request.headers.get('X-Forwarded-For') ?? '';
-
-const ipAddress = xRealIp || xForwardedFor.split(',')[0];
-
+const ipAddress = IpService.extractIpFromRequest(Astro.request);
 let ipData = null;
 let error = null;
 
 try {
   ipData = (await IpService.getFromCache(ipAddress)) || (await IpService.getFromAPIAndCache(ipAddress));
 } catch (err) {
-  console.error('Cache lookup failed:', err);
-  error = err;
+  console.error('IP lookup failed:', err);
+  error = true;
 }
 ---
 
 <Layout title="IP - NerfThis Tools">
   <div class="px-4 py-5 mt-5 text-center">
     <h1 class="display-5 fw-bold">🏠 IP Address</h1>
-    <div class="col-lg-5 mx-auto">
+    <div class="col-lg-6 col-xl-5 mx-auto">
       <p class="lead mb-3">Here's your current IP Address and Geolocation data.</p>
     </div>
   </div>
 
   <div class="container">
-    <div class="col-lg-5 mx-auto">
+    <div class="col-lg-8 col-xl-6 mx-auto">
       {
         ipData && !error ? (
           <IpGeolocation data={ipData} />
         ) : (
           <>
-            <p>
-              💩 oops. Catastrophically failed to lookup IP data. The usual team of killer monkeys has been dispatched.
+            <p class="text-center">
+              💩 oops. Catastrophically failed to lookup IP data.
+              <br />
+              The usual team of killer monkeys has been dispatched.
             </p>
-            <pre>{error}</pre>
           </>
         )
       }

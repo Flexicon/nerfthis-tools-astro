@@ -31,6 +31,13 @@ export async function getFromAPIAndCache(ip: string): Promise<IpResponse> {
   return ipResponse;
 }
 
+export function extractIpFromRequest(request: Request): string {
+  const xRealIp = request.headers.get('X-Real-Ip');
+  const xForwardedFor = request.headers.get('X-Forwarded-For') ?? '';
+
+  return xRealIp || xForwardedFor.split(',')[0];
+}
+
 async function saveToCache(key: string, value: IpResponse) {
   await cache.set(key, JSON.stringify(value), { EX: CACHE_TTL });
 }
@@ -43,4 +50,5 @@ export default {
   getFromAPI,
   getFromAPIAndCache,
   getFromCache,
+  extractIpFromRequest,
 };
