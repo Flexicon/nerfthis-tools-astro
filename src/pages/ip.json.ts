@@ -5,7 +5,7 @@ import IpService from '../server/ip';
 export const get: APIRoute = async ({ request }) => {
   try {
     const ipAddress = IpService.extractIpFromRequest(request);
-    const ipData = (await IpService.getFromCache(ipAddress)) || (await IpService.getFromAPIAndCache(ipAddress));
+    const ipData = await IpService.getFromCacheOrAPI(ipAddress);
 
     const { query, isp, org, as, ...geoIpData } = ipData;
     const responseBody = {

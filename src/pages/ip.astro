@@ -4,15 +4,10 @@ import Layout from '../layouts/Layout.astro';
 import IpService from '../server/ip';
 
 const ipAddress = IpService.extractIpFromRequest(Astro.request);
-let ipData = null;
-let error = null;
 
-try {
-  ipData = (await IpService.getFromCache(ipAddress)) || (await IpService.getFromAPIAndCache(ipAddress));
-} catch (err) {
+const ipData = await IpService.getFromCacheOrAPI(ipAddress).catch((err) => {
   console.error('IP lookup failed:', err);
-  error = true;
-}
+});
 ---
 
 <Layout title="IP - NerfThis Tools">
@@ -26,7 +21,7 @@ try {
   <div class="container">
     <div class="col-lg-8 col-xl-6 mx-auto">
       {
-        ipData && !error ? (
+        ipData ? (
           <IpGeolocation data={ipData} />
         ) : (
           <>

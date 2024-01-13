@@ -31,6 +31,10 @@ export async function getFromAPIAndCache(ip: string): Promise<IpResponse> {
   return ipResponse;
 }
 
+export async function getFromCacheOrAPI(ip: string): Promise<IpResponse> {
+  return (await getFromCache(ip)) ?? getFromAPIAndCache(ip);
+}
+
 export function extractIpFromRequest(request: Request): string {
   const xRealIp = request.headers.get('X-Real-Ip');
   const xForwardedFor = request.headers.get('X-Forwarded-For') ?? '';
@@ -50,5 +54,6 @@ export default {
   getFromAPI,
   getFromAPIAndCache,
   getFromCache,
+  getFromCacheOrAPI,
   extractIpFromRequest,
 };
