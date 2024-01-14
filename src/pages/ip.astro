@@ -5,10 +5,9 @@ import IpService from "../server/ip";
 
 const ipAddress = IpService.extractIpFromRequest(Astro.request);
 
-const ipData = await IpService.getFromCacheOrAPI(ipAddress)
-  .catch((err) => {
-    console.error("IP lookup failed:", err);
-  });
+const ipData = await IpService.getFromCacheOrAPI(ipAddress).catch((err) => {
+  console.error("IP lookup failed:", err);
+});
 ---
 
 <Layout title="IP - NerfThis Tools">
@@ -19,7 +18,7 @@ const ipData = await IpService.getFromCacheOrAPI(ipAddress)
     </div>
   </div>
 
-  <div class="px-3 mx-auto md:w-3/5 xl:w-1/3">
+  <div class="px-3 mx-auto sm:w-11/12 md:w-3/4 lg:w-3/5 xl:w-1/2 2xl:w-2/5">
     {
       ipData ? (
         <IpGeolocation data={ipData} />
