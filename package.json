@@ -11,9 +11,9 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/node": "^5.0.0",
-    "@types/node": "^18.11.18",
-    "astro": "^2.0.14",
-    "redis": "^4.6.2"
+    "@astrojs/node": "^7.0.4",
+    "@types/node": "^20.11.0",
+    "astro": "^4.1.2",
+    "redis": "^4.6.12"
   }
 }
