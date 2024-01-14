@@ -1,29 +1,30 @@
 ---
-import type { IpResponse } from '../types/ip';
+import type { IpResponse } from "../types/ip";
 
 interface Props {
   data: IpResponse;
 }
 const { data } = Astro.props;
+
+const columns: { label: string; value: string }[] = [
+  { label: "IP", value: data.query },
+  { label: "City", value: data.city },
+  { label: "Region", value: data.regionName },
+  { label: "Country", value: data.country },
+];
 ---
 
-<table class="table">
+<table class="w-full">
   <tbody>
-    <tr>
-      <th scope="row">IP</th>
-      <td class="text-end">{data.query}</td>
-    </tr>
-    <tr>
-      <th scope="row">City</th>
-      <td class="text-end">{data.city}</td>
-    </tr>
-    <tr>
-      <th scope="row">Region</th>
-      <td class="text-end">{data.regionName}</td>
-    </tr>
-    <tr>
-      <th scope="row">Country</th>
-      <td class="text-end">{data.country}</td>
-    </tr>
+    {
+      columns.map(({ label, value }) => (
+        <tr class="border-b border-b-gray-200">
+          <th class="text-start p-2" scope="row">
+            {label}
+          </th>
+          <td class="text-end p-2">{value}</td>
+        </tr>
+      ))
+    }
   </tbody>
 </table>
