@@ -1,5 +1,5 @@
 import type EventEmitter from 'events';
-import { createClient, SetOptions } from 'redis';
+import { createClient, type SetOptions } from 'redis';
 
 const DEFAULT_CACHE_EX = 30;
 
