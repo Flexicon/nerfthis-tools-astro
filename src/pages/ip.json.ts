@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 
 import IpService from '../server/ip';
 
-export const get: APIRoute = async ({ request }) => {
+export const GET: APIRoute = async ({ request }) => {
   try {
     const ipAddress = IpService.extractIpFromRequest(request);
     const ipData = await IpService.getFromCacheOrAPI(ipAddress);
