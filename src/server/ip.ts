@@ -1,6 +1,6 @@
-import type { IpResponse } from '../types/ip';
+import type { IpResponse } from "../types/ip";
 
-import cache from './cache';
+import cache from "./cache";
 
 const CACHE_TTL = 300; // 5 minutes
 
@@ -10,17 +10,17 @@ export async function getFromCache(ip: string): Promise<IpResponse | null> {
   const cached = await cache.get(key);
   if (!cached) return null;
 
-  console.log('Cache hit for:', key);
+  console.log("Cache hit for:", key);
   return { ...JSON.parse(cached), cached: true };
 }
 
 export async function getFromAPI(ip: string): Promise<IpResponse> {
-  console.log('Fetching IP Geolocation for:', ip || 'localhost');
+  console.log("Fetching IP Geolocation for:", ip || "localhost");
 
   const res = await fetch(`http://ip-api.com/json/${ip}`);
   const ipData = await res.json();
 
-  if (ipData.status !== 'success') throw new Error(ipData.message);
+  if (ipData.status !== "success") throw new Error(ipData.message);
   return ipData;
 }
 
@@ -36,10 +36,13 @@ export async function getFromCacheOrAPI(ip: string): Promise<IpResponse> {
 }
 
 export function extractIpFromRequest(request: Request): string {
-  const xRealIp = request.headers.get('X-Real-Ip');
-  const xForwardedFor = request.headers.get('X-Forwarded-For') ?? '';
+  // Cloudflare masks the original IP address of the client in the default request headers.
+  // see: https://developers.cloudflare.com/fundamentals/reference/http-headers/#cf-connecting-ip
+  const cfConnectingIp = request.headers.get("CF-Connecting-IP");
+  const xRealIp = request.headers.get("X-Real-Ip");
+  const xForwardedFor = request.headers.get("X-Forwarded-For") ?? "";
 
-  return xRealIp || xForwardedFor.split(',')[0];
+  return cfConnectingIp || xRealIp || xForwardedFor.split(",")[0];
 }
 
 async function saveToCache(key: string, value: IpResponse) {
@@ -47,7 +50,7 @@ async function saveToCache(key: string, value: IpResponse) {
 }
 
 function cacheKey(ip: string): string {
-  return `tools.geo-ip.${ip || 'localhost'}`;
+  return `tools.geo-ip.${ip || "localhost"}`;
 }
 
 export default {
