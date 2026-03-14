@@ -1,0 +1,42 @@
+---
+import Layout from '../layouts/Layout.astro';
+import UnicodeConverter from '../components/UnicodeConverter.astro';
+
+export const prerender = true;
+---
+
+<Layout title="Unicode to HTML - NerfThis Tools">
+  <div class="px-6 py-12 mt-12 text-center">
+    <h1 class="text-5xl font-bold mb-5">🔤 Unicode to HTML</h1>
+    <div class="text-xl font-light lg:w-1/2 mx-auto">
+      <p class="mb-3">Convert any Unicode text, including emojis and special characters, to HTML entities.</p>
+    </div>
+  </div>
+
+  <div class="px-3 mx-auto sm:w-11/12 md:w-3/4 lg:w-3/5 xl:w-1/2 2xl:w-2/5 mb-12">
+    <UnicodeConverter />
+  </div>
+
+  <div class="px-6 py-8 mx-auto mb-12 sm:w-11/12 md:w-3/4 lg:w-3/5 xl:w-1/2 2xl:w-2/5">
+    <div class="text-sm text-gray-600 space-y-3">
+      <h2 class="text-lg font-semibold text-gray-800 mb-3">About HTML Entities</h2>
+      <p>
+        HTML entities are special codes used to represent reserved or more complicated characters in HTML. They're
+        especially useful for:
+      </p>
+      <ul class="list-disc list-inside space-y-1 ml-2">
+        <li>Displaying special characters like emojis (🎉, 🚀, 🤩)</li>
+        <li>Showing reserved HTML characters (&lt;, &gt;, &amp;)</li>
+        <li>Ensuring characters render correctly across different browsers and systems</li>
+        <li>Including non-ASCII characters in your HTML</li>
+      </ul>
+
+      <p>
+        Read more about them <a
+          href="https://developer.mozilla.org/en-US/docs/Glossary/Entity"
+          class="text-blue-600 hover:underline">here</a
+        >.
+      </p>
+    </div>
+  </div>
+</Layout>
