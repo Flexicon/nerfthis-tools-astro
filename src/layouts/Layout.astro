@@ -25,21 +25,43 @@ const { title } = Astro.props;
   </head>
   <body class="leading-8">
     <header class="py-3 px-5 bg-zinc-800 text-white">
-      <nav class="flex items-center gap-5 max-w-[1110px] mx-auto">
-        <a href="/" class="flex items-center gap-2 text-2xl">
-          <ToolsIcon />
-          <strong>NerfThis Tools</strong>
-        </a>
+      <nav class="max-w-[1110px] mx-auto">
+        <div class="flex items-center justify-between">
+          <a href="/" class="flex items-center gap-2 text-2xl">
+            <ToolsIcon />
+            <strong>NerfThis Tools</strong>
+          </a>
 
-        <div role="navigation">
-          <ul class="me-auto">
-            <li>
-              <a
-                class={["nav-link", pathname === "/ip" && "active"].join(" ")}
-                href="/ip">IP Address</a
-              >
-            </li>
-          </ul>
+          <!-- Hamburger toggle (hidden checkbox) -->
+          <input type="checkbox" id="nav-toggle" class="hidden" />
+
+          <!-- Overlay for click-outside-to-close (only visible when menu open) -->
+          <label for="nav-toggle" class="nav-overlay"></label>
+
+          <!-- Hamburger icon (only visible on mobile) -->
+          <label for="nav-toggle" class="hamburger md:hidden cursor-pointer">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+          </label>
+
+          <!-- Navigation menu -->
+          <div role="navigation" class="nav-menu">
+            <ul class="nav-list">
+              <li>
+                <a
+                  class={["nav-link", pathname === "/ip" && "active"].join(" ")}
+                  href="/ip">IP Address</a
+                >
+              </li>
+              <li>
+                <a
+                  class={["nav-link", pathname === "/unicode" && "active"].join(" ")}
+                  href="/unicode">Unicode to HTML</a
+                >
+              </li>
+            </ul>
+          </div>
         </div>
       </nav>
     </header>
@@ -57,5 +79,87 @@ const { title } = Astro.props;
 
   .nav-link.active {
     @apply text-gray-100;
+  }
+
+  /* Hamburger icon */
+  .hamburger {
+    @apply flex flex-col gap-1.5 w-7 h-6;
+  }
+
+  .hamburger-line {
+    @apply w-full h-0.5 bg-gray-300 transition-all duration-300;
+  }
+
+  /* Overlay for click-outside-to-close */
+  .nav-overlay {
+    @apply fixed inset-0 bg-black/50 opacity-0 pointer-events-none transition-opacity duration-300;
+    z-index: 40;
+  }
+
+  /* Mobile menu */
+  .nav-menu {
+    @apply absolute left-0 right-0 top-[56px] bg-zinc-800 max-h-0 overflow-hidden transition-all duration-300;
+    z-index: 50;
+  }
+
+  .nav-list {
+    @apply flex flex-col gap-0 py-0;
+  }
+
+  .nav-list li {
+    @apply border-t border-zinc-700;
+  }
+
+  .nav-list li a {
+    @apply block px-5 py-3;
+  }
+
+  /* When checkbox is checked, show menu and overlay */
+  #nav-toggle:checked ~ .nav-overlay {
+    @apply opacity-100 pointer-events-auto;
+  }
+
+  #nav-toggle:checked ~ .nav-menu {
+    @apply max-h-96 shadow-lg;
+  }
+
+  /* Animate hamburger icon when checked */
+  #nav-toggle:checked ~ .hamburger .hamburger-line:nth-child(1) {
+    @apply rotate-45 translate-y-2;
+  }
+
+  #nav-toggle:checked ~ .hamburger .hamburger-line:nth-child(2) {
+    @apply opacity-0;
+  }
+
+  #nav-toggle:checked ~ .hamburger .hamburger-line:nth-child(3) {
+    @apply -rotate-45 -translate-y-2;
+  }
+
+  /* Desktop styles */
+  @media (min-width: 768px) {
+    .hamburger {
+      @apply hidden;
+    }
+
+    .nav-overlay {
+      @apply hidden;
+    }
+
+    .nav-menu {
+      @apply static max-h-none overflow-visible;
+    }
+
+    .nav-list {
+      @apply flex-row gap-4;
+    }
+
+    .nav-list li {
+      @apply border-t-0;
+    }
+
+    .nav-list li a {
+      @apply px-0 py-0;
+    }
   }
 </style>
