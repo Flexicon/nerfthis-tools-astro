@@ -61,6 +61,12 @@ const { title } = Astro.props;
                   href="/unicode">Unicode to HTML</a
                 >
               </li>
+              <li>
+                <a
+                  class={["nav-link", pathname === "/tokens" && "active"].join(" ")}
+                  href="/tokens">Token Counter</a
+                >
+              </li>
             </ul>
           </div>
         </div>
