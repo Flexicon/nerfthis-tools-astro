@@ -8,6 +8,11 @@ export default defineConfig({
     mode: 'standalone',
   }),
   output: 'server',
+  server: {
+    host: 'tools.localhost',
+    port: 4321,
+    open: true,
+  },
   vite: {
     plugins: [tailwindcss()],
   },
