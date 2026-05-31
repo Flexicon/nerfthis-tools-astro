@@ -29,38 +29,47 @@
 </div>
 
 <script>
-  import { countTokens } from 'gpt-tokenizer';
-
   const inputEl = document.getElementById('token-input') as HTMLTextAreaElement;
   const tokenCountEl = document.getElementById('token-count') as HTMLParagraphElement;
   const charCountEl = document.getElementById('char-count') as HTMLParagraphElement;
   const wordCountEl = document.getElementById('word-count') as HTMLParagraphElement;
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const tokenizerWorker = new Worker(new URL('../workers/tokenCounter.ts', import.meta.url), { type: 'module' });
+
+  type Counts = {
+    tokens: number;
+    chars: number;
+    words: number;
+  };
+
+  type CountResponse = Counts & {
+    id: number;
+  };
 
   let animationFrame: number | undefined;
-  let displayedCounts = {
+  let displayedCounts: Counts = {
     tokens: 0,
     chars: 0,
     words: 0,
   };
-  let latestUpdateId = 0;
-
-  function estimateTokens(text: string): number {
-    if (!text.trim()) return 0;
-    return countTokens(text);
-  }
+  let latestRequestId = 0;
+  let debounceTimer: number | undefined;
 
   function easeOutCubic(progress: number): number {
     return 1 - Math.pow(1 - progress, 3);
   }
 
-  function setCounts(counts: typeof displayedCounts) {
+  function lerpCount(start: number, end: number, progress: number): number {
+    return Math.round(start + (end - start) * progress);
+  }
+
+  function setCounts(counts: Counts) {
     tokenCountEl.textContent = counts.tokens.toLocaleString();
     charCountEl.textContent = counts.chars.toLocaleString();
     wordCountEl.textContent = counts.words.toLocaleString();
   }
 
-  function animateCounts(targetCounts: typeof displayedCounts) {
+  function animateCounts(targetCounts: Counts) {
     if (animationFrame) cancelAnimationFrame(animationFrame);
 
     if (prefersReducedMotion) {
@@ -78,9 +87,9 @@
       const eased = easeOutCubic(progress);
 
       displayedCounts = {
-        tokens: Math.round(startCounts.tokens + (targetCounts.tokens - startCounts.tokens) * eased),
-        chars: Math.round(startCounts.chars + (targetCounts.chars - startCounts.chars) * eased),
-        words: Math.round(startCounts.words + (targetCounts.words - startCounts.words) * eased),
+        tokens: lerpCount(startCounts.tokens, targetCounts.tokens, eased),
+        chars: lerpCount(startCounts.chars, targetCounts.chars, eased),
+        words: lerpCount(startCounts.words, targetCounts.words, eased),
       };
 
       setCounts(displayedCounts);
@@ -97,28 +106,23 @@
     animationFrame = requestAnimationFrame(tick);
   }
 
-  function waitForNextFrame(): Promise<void> {
-    return new Promise((resolve) => {
-      requestAnimationFrame(() => resolve());
-    });
+  function queueTokenCount() {
+    const id = ++latestRequestId;
+
+    if (debounceTimer) window.clearTimeout(debounceTimer);
+
+    debounceTimer = window.setTimeout(() => {
+      tokenizerWorker.postMessage({ id, text: inputEl.value });
+    }, 150);
   }
 
-  async function updateCounts() {
-    const updateId = ++latestUpdateId;
-    const text = inputEl.value;
-    const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-    const chars = text.length;
+  tokenizerWorker.addEventListener('message', (event: MessageEvent<CountResponse>) => {
+    const { id, ...counts } = event.data;
 
-    await waitForNextFrame();
+    if (id !== latestRequestId) return;
 
-    if (updateId !== latestUpdateId) return;
+    animateCounts(counts);
+  });
 
-    const tokens = estimateTokens(text);
-
-    if (updateId !== latestUpdateId) return;
-
-    animateCounts({ tokens, chars, words });
-  }
-
-  inputEl.addEventListener('input', updateCounts);
+  inputEl.addEventListener('input', queueTokenCount);
 </script>
