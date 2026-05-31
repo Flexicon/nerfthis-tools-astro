@@ -10,7 +10,7 @@
 
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-2">
     <div class="rounded-md border border-gray-200 bg-gray-50 px-4 py-3">
-      <p class="text-xs uppercase tracking-wide text-gray-500">Estimated tokens</p>
+      <p class="text-xs uppercase tracking-wide text-gray-500">GPT-style tokens</p>
       <p id="token-count" class="text-2xl font-semibold text-gray-800">0</p>
     </div>
     <div class="rounded-md border border-gray-200 bg-gray-50 px-4 py-3">
@@ -23,10 +23,12 @@
     </div>
   </div>
 
-  <p class="text-sm text-gray-600">Token count is an estimate. Exact counts vary by model tokenizer.</p>
+  <p class="text-sm text-gray-600">Targets modern GPT-style token encoding. Other models may count differently.</p>
 </div>
 
 <script>
+  import { countTokens } from 'gpt-tokenizer';
+
   const inputEl = document.getElementById('token-input') as HTMLTextAreaElement;
   const tokenCountEl = document.getElementById('token-count') as HTMLParagraphElement;
   const charCountEl = document.getElementById('char-count') as HTMLParagraphElement;
@@ -34,20 +36,7 @@
 
   function estimateTokens(text: string): number {
     if (!text.trim()) return 0;
-
-    const words = text.match(/[A-Za-z0-9_'-]+/g) ?? [];
-    const punctuation = text.match(/[.,!?;:()[\]{}"'`~@#$%^&*+=<>/\\|-]/g) ?? [];
-    const cjkChars = text.match(/[\u3400-\u9FFF\uF900-\uFAFF]/g) ?? [];
-
-    const asciiText = text.replace(/[\u0080-\uFFFF]/g, '');
-    const asciiChars = asciiText.length;
-
-    const wordTokenEstimate = words.reduce((sum, word) => sum + Math.ceil(word.length / 4), 0);
-    const cjkTokenEstimate = cjkChars.length;
-    const punctuationTokenEstimate = punctuation.length;
-    const spacingTokenEstimate = Math.ceil(Math.max(0, asciiChars - words.join('').length - punctuation.length) / 8);
-
-    return Math.max(0, wordTokenEstimate + cjkTokenEstimate + punctuationTokenEstimate + spacingTokenEstimate);
+    return countTokens(text);
   }
 
   function updateCounts() {

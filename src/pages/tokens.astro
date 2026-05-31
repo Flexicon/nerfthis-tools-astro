@@ -1,6 +1,6 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import TokenCounter from '../components/TokenCounter.astro';
+import Layout from "../layouts/Layout.astro";
+import TokenCounter from "../components/TokenCounter.astro";
 
 export const prerender = true;
 ---
@@ -19,14 +19,14 @@ export const prerender = true;
 
   <div class="px-6 py-8 mx-auto mb-12 sm:w-11/12 md:w-3/4 lg:w-3/5 xl:w-1/2 2xl:w-2/5">
     <div class="text-sm text-gray-600 space-y-3">
-      <h2 class="text-lg font-semibold text-gray-800 mb-3">How this estimate works</h2>
+      <h2 class="text-lg font-semibold text-gray-800 mb-3">How this count works</h2>
       <p>
-        Different models split text into tokens differently. This tool gives a fast client-side estimate that is
-        useful for planning prompt size.
+        This tool counts tokens client-side in your browser using <a
+          href="https://github.com/niieani/gpt-tokenizer#readme"
+          class="text-blue-600 hover:underline">gpt-tokenizer</a
+        >. No text gets sent anywhere.
       </p>
-      <p>
-        For precise numbers, use the tokenizer for your specific target model before final usage in production.
-      </p>
+      <p>Claude, Gemini, and other models may split the same text differently. Tokenizers are annoying like that.</p>
     </div>
   </div>
 </Layout>
