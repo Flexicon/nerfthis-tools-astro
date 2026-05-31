@@ -1,5 +1,20 @@
 @import "tailwindcss";
 
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-group(*) {
+  animation-duration: 0.2s;
+  animation-timing-function: ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*) {
+    animation-duration: 0.01ms;
+  }
+}
+
 .nav-link {
   @apply text-gray-400 transition-colors hover:text-gray-300;
 }

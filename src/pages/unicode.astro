@@ -7,7 +7,10 @@ export const prerender = true;
 
 <Layout title="Unicode to HTML - NerfThis Tools">
   <div class="px-6 py-12 mt-12 text-center">
-    <h1 class="text-5xl font-bold mb-5">🔤 Unicode to HTML</h1>
+    <h1 class="text-5xl font-bold mb-5">
+      <span aria-hidden="true">🔤</span>
+      <span style="view-transition-name: tool-title-unicode">Unicode to HTML</span>
+    </h1>
     <div class="text-xl font-light lg:w-1/2 mx-auto">
       <p class="mb-3">Convert any Unicode text, including emojis and special characters, to HTML entities.</p>
     </div>

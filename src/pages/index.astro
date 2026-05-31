@@ -8,18 +8,21 @@ const tools = [
     href: "/ip",
     icon: "🏠",
     title: "IP Address",
+    transitionName: "tool-title-ip",
     description: "See your current IP address and geolocation details.",
   },
   {
     href: "/unicode",
     icon: "🔤",
     title: "Unicode to HTML",
+    transitionName: "tool-title-unicode",
     description: "Convert Unicode text, emojis, and special characters to HTML entities.",
   },
   {
     href: "/tokens",
     icon: "🧠",
     title: "Token Counter",
+    transitionName: "tool-title-tokens",
     description: "Estimate how many LLM tokens your prompt or pasted text will use.",
   },
 ];
@@ -59,7 +62,12 @@ const tools = [
                 →
               </span>
             </div>
-            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-700">{tool.title}</h3>
+            <h3
+              class="text-lg font-semibold text-gray-900 group-hover:text-blue-700"
+              style={`view-transition-name: ${tool.transitionName}`}
+            >
+              {tool.title}
+            </h3>
             <p class="mt-2 text-sm leading-6 text-gray-600">{tool.description}</p>
             <span class="sr-only">Open {tool.title}</span>
           </a>
