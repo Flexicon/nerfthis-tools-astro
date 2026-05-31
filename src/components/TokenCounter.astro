@@ -5,7 +5,9 @@
       id="token-input"
       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
       rows="8"
+      maxlength="1000000"
       placeholder="Paste or type text here to estimate token count..."></textarea>
+    <p class="mt-2 text-xs text-gray-500">Limited to 1,000,000 characters so your browser tab stays alive.</p>
   </div>
 
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-2">
@@ -33,21 +35,89 @@
   const tokenCountEl = document.getElementById('token-count') as HTMLParagraphElement;
   const charCountEl = document.getElementById('char-count') as HTMLParagraphElement;
   const wordCountEl = document.getElementById('word-count') as HTMLParagraphElement;
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let animationFrame: number | undefined;
+  let displayedCounts = {
+    tokens: 0,
+    chars: 0,
+    words: 0,
+  };
+  let latestUpdateId = 0;
 
   function estimateTokens(text: string): number {
     if (!text.trim()) return 0;
     return countTokens(text);
   }
 
-  function updateCounts() {
+  function easeOutCubic(progress: number): number {
+    return 1 - Math.pow(1 - progress, 3);
+  }
+
+  function setCounts(counts: typeof displayedCounts) {
+    tokenCountEl.textContent = counts.tokens.toLocaleString();
+    charCountEl.textContent = counts.chars.toLocaleString();
+    wordCountEl.textContent = counts.words.toLocaleString();
+  }
+
+  function animateCounts(targetCounts: typeof displayedCounts) {
+    if (animationFrame) cancelAnimationFrame(animationFrame);
+
+    if (prefersReducedMotion) {
+      displayedCounts = targetCounts;
+      setCounts(targetCounts);
+      return;
+    }
+
+    const startCounts = { ...displayedCounts };
+    const startTime = performance.now();
+    const duration = 180;
+
+    function tick(now: number) {
+      const progress = Math.min((now - startTime) / duration, 1);
+      const eased = easeOutCubic(progress);
+
+      displayedCounts = {
+        tokens: Math.round(startCounts.tokens + (targetCounts.tokens - startCounts.tokens) * eased),
+        chars: Math.round(startCounts.chars + (targetCounts.chars - startCounts.chars) * eased),
+        words: Math.round(startCounts.words + (targetCounts.words - startCounts.words) * eased),
+      };
+
+      setCounts(displayedCounts);
+
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(tick);
+        return;
+      }
+
+      displayedCounts = targetCounts;
+      setCounts(targetCounts);
+    }
+
+    animationFrame = requestAnimationFrame(tick);
+  }
+
+  function waitForNextFrame(): Promise<void> {
+    return new Promise((resolve) => {
+      requestAnimationFrame(() => resolve());
+    });
+  }
+
+  async function updateCounts() {
+    const updateId = ++latestUpdateId;
     const text = inputEl.value;
     const words = text.trim() ? text.trim().split(/\s+/).length : 0;
     const chars = text.length;
+
+    await waitForNextFrame();
+
+    if (updateId !== latestUpdateId) return;
+
     const tokens = estimateTokens(text);
 
-    tokenCountEl.textContent = tokens.toLocaleString();
-    charCountEl.textContent = chars.toLocaleString();
-    wordCountEl.textContent = words.toLocaleString();
+    if (updateId !== latestUpdateId) return;
+
+    animateCounts({ tokens, chars, words });
   }
 
   inputEl.addEventListener('input', updateCounts);
