@@ -10,7 +10,7 @@
     <p class="mt-2 text-xs text-gray-500">Limited to 1,000,000 characters so your browser tab stays alive.</p>
   </div>
 
-  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-2">
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-2">
     <div class="rounded-md border border-gray-200 bg-gray-50 px-4 py-3">
       <p class="text-xs uppercase tracking-wide text-gray-500">GPT-style tokens</p>
       <p id="token-count" class="text-2xl font-semibold text-gray-800">0</p>
@@ -23,6 +23,10 @@
       <p class="text-xs uppercase tracking-wide text-gray-500">Words</p>
       <p id="word-count" class="text-2xl font-semibold text-gray-800">0</p>
     </div>
+    <div class="rounded-md border border-gray-200 bg-gray-50 px-4 py-3">
+      <p class="text-xs uppercase tracking-wide text-gray-500">Bytes</p>
+      <p id="byte-count" class="text-2xl font-semibold text-gray-800">0</p>
+    </div>
   </div>
 
   <p class="text-sm text-gray-600">Targets modern GPT-style token encoding. Other models may count differently.</p>
@@ -33,6 +37,7 @@
   const tokenCountEl = document.getElementById('token-count') as HTMLParagraphElement;
   const charCountEl = document.getElementById('char-count') as HTMLParagraphElement;
   const wordCountEl = document.getElementById('word-count') as HTMLParagraphElement;
+  const byteCountEl = document.getElementById('byte-count') as HTMLParagraphElement;
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const tokenizerWorker = new Worker(new URL('../workers/tokenCounter.ts', import.meta.url), { type: 'module' });
 
@@ -40,6 +45,7 @@
     tokens: number;
     chars: number;
     words: number;
+    bytes: number;
   };
 
   type CountResponse = Counts & {
@@ -51,6 +57,7 @@
     tokens: 0,
     chars: 0,
     words: 0,
+    bytes: 0,
   };
   let latestRequestId = 0;
   let debounceTimer: number | undefined;
@@ -67,6 +74,7 @@
     tokenCountEl.textContent = counts.tokens.toLocaleString();
     charCountEl.textContent = counts.chars.toLocaleString();
     wordCountEl.textContent = counts.words.toLocaleString();
+    byteCountEl.textContent = counts.bytes.toLocaleString();
   }
 
   function animateCounts(targetCounts: Counts) {
@@ -90,6 +98,7 @@
         tokens: lerpCount(startCounts.tokens, targetCounts.tokens, eased),
         chars: lerpCount(startCounts.chars, targetCounts.chars, eased),
         words: lerpCount(startCounts.words, targetCounts.words, eased),
+        bytes: lerpCount(startCounts.bytes, targetCounts.bytes, eased),
       };
 
       setCounts(displayedCounts);

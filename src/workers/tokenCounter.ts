@@ -33,5 +33,6 @@ self.addEventListener('message', (event: MessageEvent<CountRequest>) => {
     chars: text.length,
     words: hasText ? countWords(text) : 0,
     tokens: hasText ? countTokens(text) : 0,
+    bytes: hasText ? new TextEncoder().encode(text).length : 0,
   });
 });
